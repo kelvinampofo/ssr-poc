@@ -4,7 +4,9 @@ import { DatabaseError } from "pg";
 
 export async function GET() {
   try {
-    const result = await pool.query("SELECT * FROM posts ORDER BY id");
+    const result = await pool.query(
+      "SELECT id, title, content, created_at FROM posts ORDER BY id"
+    );
     return NextResponse.json(result.rows);
   } catch (error: unknown) {
     if (error instanceof DatabaseError) {
@@ -18,7 +20,7 @@ export async function POST(request: Request) {
   try {
     const { title, content } = await request.json();
     const result = await pool.query(
-      "INSERT INTO posts (title, content) VALUES ($1, $2) RETURNING *",
+      "INSERT INTO posts (title, content) VALUES ($1, $2) RETURNING id, title, content, created_at",
       [title, content]
     );
     return NextResponse.json(result.rows[0], { status: 201 });
