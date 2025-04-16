@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@base-ui-components/react": "^1.0.0-alpha.7",
     "next": "15.3.0",
     "pg": "^8.14.1",
     "react": "^19.0.0",
