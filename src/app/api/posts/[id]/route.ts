@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import pool from "../../../../lib/db";
 import { DatabaseError } from "pg";
 
-type Context = { params: { id: string } };
+type Context = { params: Promise<{ id: string }> };
 
 export async function GET(_: Request, context: Context) {
-  const { id } = context.params;
+  const { id } = (await context.params);
 
   try {
     const result = await pool.query("SELECT * FROM posts WHERE id = $1", [id]);
@@ -22,7 +22,7 @@ export async function GET(_: Request, context: Context) {
 }
 
 export async function PUT(request: Request, context: Context) {
-  const { id } = context.params;
+  const { id } = (await context.params);
 
   try {
     const { title, content } = await request.json();
@@ -43,7 +43,7 @@ export async function PUT(request: Request, context: Context) {
 }
 
 export async function DELETE(_: Request, context: Context) {
-  const { id } = context.params;
+  const { id } = (await context.params);
 
   try {
     await pool.query("DELETE FROM posts WHERE id = $1", [id]);
