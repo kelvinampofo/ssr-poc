@@ -7,7 +7,8 @@ export async function GET() {
     const result = await pool.query(
       "SELECT id, title, content, created_at FROM posts ORDER BY id"
     );
-    return NextResponse.json(result.rows);
+    const posts = result.rows.length ? result.rows : [];
+    return NextResponse.json(posts);
   } catch (error: unknown) {
     if (error instanceof DatabaseError) {
       return NextResponse.json({ error: error.message }, { status: 500 });
