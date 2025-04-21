@@ -5,7 +5,7 @@ import { DatabaseError } from "pg";
 type Context = { params: Promise<{ id: string }> };
 
 export async function GET(_: Request, context: Context) {
-  const { id } = (await context.params);
+  const { id } = await context.params;
 
   try {
     const result = await pool.query("SELECT * FROM posts WHERE id = $1", [id]);
@@ -22,7 +22,7 @@ export async function GET(_: Request, context: Context) {
 }
 
 export async function PUT(request: Request, context: Context) {
-  const { id } = (await context.params);
+  const { id } = await context.params;
 
   try {
     const { title, content } = await request.json();
@@ -43,11 +43,11 @@ export async function PUT(request: Request, context: Context) {
 }
 
 export async function DELETE(_: Request, context: Context) {
-  const { id } = (await context.params);
+  const { id } = await context.params;
 
   try {
     await pool.query("DELETE FROM posts WHERE id = $1", [id]);
-    return NextResponse.json(null, { status: 204 });
+    return new NextResponse(null, { status: 204 });
   } catch (error: unknown) {
     if (error instanceof DatabaseError) {
       return NextResponse.json({ error: error.message }, { status: 500 });
