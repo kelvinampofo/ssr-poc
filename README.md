@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a [Next.js](https://nextjs.org) proof of concept for running SSR (Server-Side Rendering) in your own infrastructure using Docker Compose, PostgreSQL, and PGAdmin.
 
-## Getting Started
+## Running with Docker Compose
 
-First, run the development server:
+### Prerequisites
+
+- [Docker](https://www.docker.com/products/docker-desktop) and [Docker Compose](https://docs.docker.com/compose/install/) installed
+
+### 1. Build and Start the Services
+
+From the project root, run:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker-compose up --build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This will start:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **PostgreSQL** (database)
+- **PGAdmin** (database admin UI)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 2. Accessing Services
 
-## Learn More
+- **Next.js app**: (If you want to run the app in Docker, add a service for it in `docker-compose.yml` or run manually:)
 
-To learn more about Next.js, take a look at the following resources:
+  ```bash
+  docker build -t ssr-poc .
+  docker run --env-file .env.local -p 3000:3000 ssr-poc
+  ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+  Then open [http://localhost:3000](http://localhost:3000)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **PGAdmin**: [http://localhost:5050](http://localhost:5050)
 
-## Deploy on Vercel
+  - Login: `admin@admin.com` / `admin`
+  - Add a new server:
+    - Host: `postgres`
+    - User: `admin`
+    - Password: `admin`
+    - Database: `mydb`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **PostgreSQL**: available at `localhost:5432` (see `.env.local`)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 3. Environment Variables
+
+The app uses the following database URL (see `.env.local`):
+
+```
+DATABASE_URL=postgresql://admin:admin@localhost:5432/mydb
+```
+
+If running the app inside Docker, use `postgres` as the host:
+
+```
+DATABASE_URL=postgresql://admin:admin@postgres:5432/mydb
+```
+
+---
+
+## Running Locally (without Docker)
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+   The app will be available at [http://localhost:3000](http://localhost:3000).
+
+3. Make sure PostgreSQL is running and accessible as configured in `.env.local`:
+   ```
+   DATABASE_URL=postgresql://admin:admin@localhost:5432/mydb
+   ```
+   You can use Docker Compose to start only the database services if needed:
+   ```bash
+   docker-compose up postgres pgadmin
+   ```
+
+This setup is a proof of concept for running SSR/Next.js on your own infrastructure. For production, further configuration and security hardening are required.
