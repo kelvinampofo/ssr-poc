@@ -1,59 +1,39 @@
 This is a [Next.js](https://nextjs.org) proof of concept for running SSR (Server-Side Rendering) in your own infrastructure using Docker Compose, PostgreSQL, and PGAdmin.
 
-## Running with Docker Compose
+## Docker Compose Setup
 
-### Prerequisites
+This project includes a `docker-compose.yml` for running PostgreSQL and PGAdmin. The app itself is built and run using the provided `Dockerfile`.
 
-- [Docker](https://www.docker.com/products/docker-desktop) and [Docker Compose](https://docs.docker.com/compose/install/) installed
-
-### 1. Build and Start the Services
+### 1. Start Database Services
 
 From the project root, run:
 
 ```bash
-docker-compose up --build
+docker-compose up -d
 ```
 
-This will start:
-
-- **PostgreSQL** (database)
-- **PGAdmin** (database admin UI)
-
-### 2. Accessing Services
-
-- **Next.js app**: (If you want to run the app in Docker, add a service for it in `docker-compose.yml` or run manually:)
-
-  ```bash
-  docker build -t ssr-poc .
-  docker run --env-file .env.local -p 3000:3000 ssr-poc
-  ```
-
-  Then open [http://localhost:3000](http://localhost:3000)
-
-- **PGAdmin**: [http://localhost:5050](http://localhost:5050)
-
+- **PostgreSQL** will be available at `localhost:5432`.
+- **PGAdmin** will be available at [http://localhost:5050](http://localhost:5050)
   - Login: `admin@admin.com` / `admin`
-  - Add a new server:
+  - Add a new server with:
     - Host: `postgres`
     - User: `admin`
     - Password: `admin`
     - Database: `mydb`
 
-- **PostgreSQL**: available at `localhost:5432` (see `.env.local`)
+### 2. Build and Run the App in Docker
+
+```bash
+docker build -t ssr-poc .
+docker run --env-file .env.local -p 3000:3000 ssr-poc
+```
+
+- The app will be available at [http://localhost:3000](http://localhost:3000)
 
 ### 3. Environment Variables
 
-The app uses the following database URL (see `.env.local`):
-
-```
-DATABASE_URL=postgresql://admin:admin@localhost:5432/mydb
-```
-
-If running the app inside Docker, use `postgres` as the host:
-
-```
-DATABASE_URL=postgresql://admin:admin@postgres:5432/mydb
-```
+- See `.env.example` for required variables. If running the app in Docker, set `DATABASE_URL=postgresql://admin:admin@postgres:5432/mydb`.
+- If running locally, use `localhost` as the host.
 
 ---
 
@@ -79,5 +59,7 @@ DATABASE_URL=postgresql://admin:admin@postgres:5432/mydb
    ```bash
    docker-compose up postgres pgadmin
    ```
+
+---
 
 This setup is a proof of concept for running SSR/Next.js on your own infrastructure. For production, further configuration and security hardening are required.
